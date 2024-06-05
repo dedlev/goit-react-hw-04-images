@@ -11,22 +11,22 @@ import {
 
 export class Searchbar extends Component {
   state = {
-    searchName: '',
+    query: '',
   };
 
   handleNameChange = event => {
-    this.setState({ searchName: event.currentTarget.value.toLowerCase() });
+    this.setState({ query: event.currentTarget.value.toLowerCase() });
   };
 
   handleSubmit = event => {
     event.preventDefault();
 
-    if (this.state.searchName.trim() === '') {
+    if (this.state.query.trim() === '') {
       return alert('Введіть назву зображень!');
     }
 
-    this.props.onSubmit(this.state.searchName);
-    this.setState({ searchName: '' });
+    this.props.onSubmit(this.state.query);
+    this.setState({ query: '' });
   };
 
   render() {
@@ -34,14 +34,14 @@ export class Searchbar extends Component {
       <SearchbarHeader>
         <Form onSubmit={this.handleSubmit}>
           <Button type="submit">
-            <ImSearch />
+            <ImSearch style={{ fontSize: 20 }} />
             <ButtonLabel>Search</ButtonLabel>
           </Button>
 
           <Input
             type="text"
             name="searchName"
-            value={this.state.searchName}
+            value={this.state.query}
             onChange={this.handleNameChange}
             // autocomplete="off"
             // autofocus
@@ -52,3 +52,4 @@ export class Searchbar extends Component {
     );
   }
 }
+
