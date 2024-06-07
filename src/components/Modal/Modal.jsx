@@ -1,35 +1,32 @@
-import { Component } from 'react';
-import { Overlay, Image } from './Modal.styled';
+import Modal from 'react-modal';
+import {  Image } from './Modal.styled';
 
-export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyClose);
-  }
+const customStyles = {
+  content: {
+    marginTop: '36px',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto', 
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyClose);
-  }
+Modal.setAppElement('#root');
 
-  handleKeyClose = event => {
-    if (event.code === 'Escape') {
-      this.props.onClose();
-    }
-  };
-
-  handleClose = event => {
-    if (event.target === event.currentTarget) {
-      this.props.onClose();
-    }
-  };
-
-  render() {
-    // const { children } = this.props;
-    return (
-      <Overlay onClick={this.handleClose}>
-        <Image>
-          <img src="" alt="" />
-        </Image>
-      </Overlay>
-    );
-  }
+export const ImageModal = ({isOpen, onClose, src, tags}) => {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onClose}
+      style={customStyles}
+      contentLabel="Image Modal"
+    >
+      <Image src={src} alt={tags} />
+  </Modal> 
+  )
 }
+
+
+

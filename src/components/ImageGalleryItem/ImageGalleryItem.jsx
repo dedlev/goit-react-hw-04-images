@@ -1,13 +1,31 @@
-import React from 'react';
-import { Item, Iamge } from './ImageGalleryItem.styled';
-// import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { Item, Image } from './ImageGalleryItem.styled';
+import { ImageModal } from 'components/Modal/Modal';
 
-export const ImageGalleryItem = ({image}) => {
-  const{id, src, alt} = image;
+export class ImageGalleryItem extends Component {
+  state = {
+    isOpenModal: false,
+  }
 
-  return (
-    <Item key={id}>
-      <Iamge src={src} alt={alt} />
-    </Item>
-  );
+  openModal = () => {
+    this.setState({ isOpenModal: true });
+  }
+
+  closeModal = () => {
+    console.log('Closing modal');
+    this.setState({ isOpenModal: false });
+  }
+
+  render() {
+    const { webformatURL, largeImageURL, tags } = this.props.image;
+    const { isOpenModal } = this.state;
+    return (
+      <>
+        <Item onClick={this.openModal}>
+          <Image src={webformatURL} alt={tags} />
+        </Item>
+        <ImageModal isOpen={isOpenModal} onClose={this.closeModal} src={largeImageURL} tags={tags} />
+      </>
+    );
+  }
 };
