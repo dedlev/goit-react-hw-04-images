@@ -2,6 +2,9 @@ import Modal from 'react-modal';
 import {  Image } from './Modal.styled';
 
 const customStyles = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  },
   content: {
     marginTop: '36px',
     top: '50%',
