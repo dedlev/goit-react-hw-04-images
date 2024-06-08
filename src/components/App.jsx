@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { GlobalStyle } from './GlobalStyle';
-import { Appstyled } from './Appstyled';
-import { ImSpinner } from 'react-icons/im';
+import { Appstyled, LoaderWrapper } from './Appstyled';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
-
-// axios.defaults.baseURL = 'https://pixabay.com/api';
+import { getImages } from 'services/images.service';
+import { RotatingLines } from 'react-loader-spinner';
+import Notiflix from 'notiflix';
 
 export class App extends Component {
   state = {
     images: [],
     query: '',
     page: 1,
+    perPage: 12,
+    totalPages: '',
+    isError: '',
     isLoading: false,
   };
 
@@ -22,31 +24,34 @@ export class App extends Component {
 
     if (prevState.query !== query || prevState.page !== page) {
       this.setState({ isLoading: true });
-      try {
-        console.log(`Fetching images for query: "${query}" on page: ${page}`);
-        const response = await axios.get(
-          `/?key=43582333-b71aa2f7f7d4d82dcec6d74cc&q=${query}&image_type=photo&orientation=horizontal&page=${page}&per_page=12`
-        );
-        console.log(response.data);
-        if (response.data.hits.length === 0) {
-          alert ('No such request faund')
-        }
-        this.setState(prevState => ({
-          images: page === 1 ? response.data.hits : [...prevState.images, ...response.data.hits],
-        }));
-      } catch (error) {
-        console.error('Error fetching images:', error);
-      } finally {
-        this.setState({ isLoading: false });
-      }
+
+      this.fetchData(query, page);
     }
   }
 
+  fetchData = async (query, page, perPage) => {
+    try {
+      const data = await getImages(query, page, perPage);
+      
+        if (data.hits.length === 0) {
+          // this.setState({isError: `Query with name '${query}' not faund`})
+          Notiflix.Notify.failure(`Query with name '${query}' not faund`)
+        }
+        this.setState(prevState => ({
+          images: page === 1 ? data.hits : [...prevState.images, ...data.hits],
+          totalPages: (data.total / this.state.perPage),
+        }));
+      
+      } catch (error) {
+        const errorFetching = error.message
+      this.setState({ isError: errorFetching })
+      
+      } finally {
+        this.setState({ isLoading: false });
+      }
+  }
+
   handleSubmit = newQuery => {
-    if (newQuery.trim() === '') {
-      alert('Please enter a search query.');
-      return;
-    }
     this.setState({
       query: newQuery,
       page: 1,
@@ -55,54 +60,35 @@ export class App extends Component {
   };
 
   handleLoadMore = () => {
-    console.log('Load More clicked');
     this.setState(prevState => ({
       page: prevState.page + 1,
     }));
   };
 
   render() {
-    const { images, isLoading } = this.state;
+    const { images, totalPages, page, isLoading, isError } = this.state;
     return (
       <Appstyled>
         <Searchbar onSubmit={this.handleSubmit} />
-        {isLoading && <div><ImSpinner size="32" /> Loading...</div>}
+        {isError && <h1>{isError}</h1>}
+       {isLoading && (
+          <LoaderWrapper>
+            <RotatingLines
+              visible={true}
+              height="96"
+              width="96"
+              color="grey"
+              strokeWidth="5"
+              animationDuration="0.75"
+              ariaLabel="rotating-lines-loading"
+            />
+          </LoaderWrapper>
+        )}
         {images.length > 0 && <ImageGallery images={images} />}
-        {images.length > 0 && !isLoading && <Button onClick={this.handleLoadMore} />}
+        {images.length > 0 && !isLoading && totalPages > page && <Button onClick={this.handleLoadMore} />}
         <GlobalStyle />
       </Appstyled>
     );
   }
 }
 
-
-
-  // render() {
-  //   const { images, status } = this.state;
-
-  //     // <Appstyled>
-  //       if (status === 'idle') {
-  //       return <Searchbar onSubmit={this.handleSubmit} />;
-  //       }
-
-  //   if (status === 'pending') {
-  //     return
-  //     <>
-  //       <h1>Loading...</h1>
-  //       <div><ImSpinner size="32" />Loading...</div>
-  //     </>   
-  //       }
-
-    //     if(status === regected) {
-    //       return <p>Error</p>
-    //     }
-    
-    // if (status === resolved) {
-    //   return <ImageGallery images={images} />
-    // }
-      // </Appstyled> 
-// }
-
-
-
-// Your API key: 43582333-b71aa2f7f7d4d82dcec6d74cc

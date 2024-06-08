@@ -8,6 +8,7 @@ import {
   ButtonLabel,
   Input,
 } from './Searchbar.styled';
+import Notiflix from 'notiflix';
 
 export class Searchbar extends Component {
   state = {
@@ -22,7 +23,8 @@ export class Searchbar extends Component {
     event.preventDefault();
 
     if (this.state.query.trim() === '') {
-      return alert('Введіть назву зображень!');
+      // return alert('Введіть назву зображень!');
+      return Notiflix.Notify.warning('Please enter a search query.');
     }
 
     this.props.onSubmit(this.state.query);
