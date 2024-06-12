@@ -12,7 +12,7 @@ import Notiflix from 'notiflix';
 
 export class Searchbar extends Component {
   state = {
-    query: '',
+    query: 'aa',
   };
 
   handleNameChange = event => {
@@ -54,4 +54,3 @@ export class Searchbar extends Component {
     );
   }
 }
-
