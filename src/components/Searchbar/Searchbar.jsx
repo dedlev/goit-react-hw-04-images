@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ImSearch } from 'react-icons/im';
-import PropTypes from 'prop-types';
 import Notiflix from 'notiflix';
+import PropTypes from 'prop-types';
 import {
   Button,
   ButtonLabel,
