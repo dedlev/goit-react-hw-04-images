@@ -1,5 +1,6 @@
 import Modal from 'react-modal';
-import {  Image } from './Modal.styled';
+import { Image } from './Modal.styled';
+import PropTypes from 'prop-types'
 
 const customStyles = {
   overlay: {
@@ -31,5 +32,10 @@ export const ImageModal = ({isOpen, onClose, src, tags}) => {
   )
 }
 
-
+ImageModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  src: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+};
 

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const SearchbarHeader = styled.header`
+export const SearchBarHeader = styled.header`
   top: 0;
   left: 0;
   position: sticky;
@@ -75,5 +75,3 @@ export const Input = styled.input`
     font-size: 18px;
   }
 `;
-
-
