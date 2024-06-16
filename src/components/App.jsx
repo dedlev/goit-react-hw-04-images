@@ -48,6 +48,7 @@ export const App = () => {
     setQuery(newQuery.trim());
     setPage(1);
     setImages([]);
+    setPerPage(perPage);
   };
 
   const handleLoadMore = () => {
