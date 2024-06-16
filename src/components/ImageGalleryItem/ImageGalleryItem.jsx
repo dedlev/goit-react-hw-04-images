@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { Item, Image } from './ImageGalleryItem.styled';
 import { ImageModal } from 'components/Modal/Modal';
 
-export const ImageGalleryItem = ({ image }) => {
+export const ImageGalleryItem = ({
+  image: { webformatURL, largeImageURL, tags },
+}) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const openModal = () => {
@@ -13,8 +15,6 @@ export const ImageGalleryItem = ({ image }) => {
   const closeModal = () => {
     setIsOpenModal(false);
   };
-
-  const { webformatURL, largeImageURL, tags } = image;
 
   return (
     <>

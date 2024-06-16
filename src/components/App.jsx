@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { GlobalStyle } from './GlobalStyle';
 import { Appstyled, LoaderWrapper } from './Appstyled';
 import { SearchBar } from './Searchbar/Searchbar';
@@ -8,86 +8,74 @@ import { getImages } from 'services/images.service';
 import { RotatingLines } from 'react-loader-spinner';
 import Notiflix from 'notiflix';
 
-export class App extends Component {
-  state = {
-    images: [],
-    query: '',
-    page: 1,
-    perPage: '12',
-    totalPages: '',
-    isError: '',
-    isLoading: false,
-  };
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [totalPages, setTotalPages] = useState('');
+  const [isError, setIsError] = useState('');
+  const [isLoading, setIsLoading] = useState('false');
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { query, page, perPage } = this.state;
-
-    if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ isLoading: true });
-
-      this.fetchData(query, page, perPage);
-    }
-  }
-
-  fetchData = async (query, page, perPage) => {
-    try {
-      const data = await getImages(query, page, perPage);
-
-      if (data.hits.length === 0) {
-        // this.setState({isError: `Query with name '${query}' not faund`})
-        Notiflix.Notify.failure(`Query with name '${query}' not faund`);
+  useEffect(() => {
+    async function fetchData(query, page, perPage) {
+      try {
+        if (query === '') {
+          return;
+        }
+        setIsLoading(true);
+        const data = await getImages(query, page, perPage);
+        if (data.hits.length === 0) {
+          // this.setState({isError: `Query with name '${query}' not faund`})
+          Notiflix.Notify.failure(`Query with name '${query}' not faund`);
+        }
+        setImages(prevImages =>
+          page === 1 ? data.hits : [...prevImages, ...data.hits]
+        );
+        setTotalPages(data.total / perPage);
+      } catch (error) {
+        const errorFetching = error.message;
+        setIsError(errorFetching);
+      } finally {
+        setIsLoading(false);
       }
-      this.setState(prevState => ({
-        images: page === 1 ? data.hits : [...prevState.images, ...data.hits],
-        totalPages: data.total / this.state.perPage,
-      }));
-    } catch (error) {
-      const errorFetching = error.message;
-      this.setState({ isError: errorFetching });
-    } finally {
-      this.setState({ isLoading: false });
     }
+
+    fetchData(query, page, perPage);
+  }, [page, perPage, query]);
+
+  const handleSubmit = newQuery => {
+    setQuery(newQuery.trim());
+    setPage(1);
+    setImages([]);
   };
 
-  handleSubmit = newQuery => {
-    this.setState({
-      query: newQuery,
-      page: 1,
-      images: [],
-    });
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
-
-  render() {
-    const { images, totalPages, page, isLoading, isError } = this.state;
-    return (
-      <Appstyled>
-        <SearchBar onSubmit={this.handleSubmit} />
-        {isError && <h1>{isError}</h1>}
-        {isLoading && (
-          <LoaderWrapper>
-            <RotatingLines
-              visible={true}
-              height="96"
-              width="96"
-              color="grey"
-              strokeWidth="5"
-              animationDuration="0.75"
-              ariaLabel="rotating-lines-loading"
-            />
-          </LoaderWrapper>
-        )}
-        {images.length > 0 && <ImageGallery images={images} />}
-        {images.length > 0 && !isLoading && totalPages > page && (
-          <Button onClick={this.handleLoadMore} />
-        )}
-        <GlobalStyle />
-      </Appstyled>
-    );
-  }
-}
+  return (
+    <Appstyled>
+      <SearchBar onSubmit={handleSubmit} />
+      {isError && <h1>{isError}</h1>}
+      {isLoading && (
+        <LoaderWrapper>
+          <RotatingLines
+            visible={true}
+            height="96"
+            width="96"
+            color="grey"
+            strokeWidth="5"
+            animationDuration="0.75"
+            ariaLabel="rotating-lines-loading"
+          />
+        </LoaderWrapper>
+      )}
+      {images.length > 0 && <ImageGallery images={images} />}
+      {images.length > 0 && !isLoading && totalPages > page && (
+        <Button onClick={handleLoadMore} />
+      )}
+      <GlobalStyle />
+    </Appstyled>
+  );
+};
