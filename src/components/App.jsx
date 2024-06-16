@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { GlobalStyle } from './GlobalStyle';
 import { Appstyled, LoaderWrapper } from './Appstyled';
-import { SearchBar } from './SearchBar/SearchBar';
+import { SearchBar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import { getImages } from 'services/images.service';
